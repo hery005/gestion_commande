@@ -1,0 +1,32 @@
+Compte rendu - 1 octobre 2026
+Projet final - API Django REST Framework
+
+Travail realise
+
+- Clarification du role du serializer : validation des donnees entrantes et conversion des objets en JSON pour les reponses API.
+- Creation utilisateur : le serializer delegue a Utilisateurs.objects.create_user(); le gestionnaire utilise set_password() pour hacher le mot de passe avant l'enregistrement.
+- Le champ password est write_only afin qu'il soit accepte en entree mais absent des reponses JSON.
+- Mise a jour utilisateur : le mot de passe est hache avec set_password() lorsqu'il est modifie.
+- Clarification des actions ModelViewSet : create, update, partial_update et destroy sont les actions prises en charge par le routeur DRF.
+- Routage des utilisateurs et des endpoints JWT : /api/utilisateurs/, /api/token/ et /api/token/refresh/.
+- Configuration de JWTAuthentication et de SIMPLE_JWT.USER_ID_FIELD pour utiliser la cle primaire personnalisee id_utilisateur.
+- Correction de l'action login pour utiliser TokenObtainPairSerializer et renvoyer les jetons access et refresh. L'action est accessible par POST /api/utilisateurs/login/.
+- Ajustement de la route API et suppression d'une inscription router en double.
+- Correction d'importations de la vue qui empechaient le chargement du ViewSet.
+
+Verifications effectuees
+
+- python manage.py check : aucun probleme detecte apres les corrections de routage.
+- POST /api/utilisateurs/ avec curl : 201 Created; le mot de passe etait absent de la reponse.
+- POST /api/utilisateurs/login/ avec le compte de test : 200, champs access et refresh.
+- GET /api/utilisateurs/ avec le jeton Bearer access : 200.
+- Le serveur Apache repondait sur le port 8000 avec une page 404; le serveur Django de test a repondu sur le port 8001.
+
+Points a poursuivre
+
+- Le backend n'effectue pas automatiquement le renouvellement des jetons : le client doit appeler /api/token/refresh/ et gerer le jeton refresh.
+- Le renouvellement du jeton refresh par rotation n'est pas active; la duree configuree est de 15 minutes pour access et 7 jours pour refresh.
+- La vue utilisateurs exige IsAuthenticated pour toutes ses actions, y compris create. Utiliser AllowAny pour l'inscription publique si necessaire.
+- get_queryset() renvoie actuellement tous les utilisateurs. Restreindre les donnees et les permissions selon les roles ou le proprietaire avant utilisation reelle.
+- Les routes et appels React n'ont pas ete valides ensemble; CORS autorise localhost:5173 et localhost:3000.
+- Une suppression peut etre bloquee si des donnees associees utilisent on_delete=PROTECT.
