@@ -5,7 +5,6 @@ Guide pratique en français, adapté à l'API Django de ce projet. Il explique l
 ## 1. Vue d'ensemble
 
 Django REST Framework (DRF) ajoute à Django les outils nécessaires pour construire des API HTTP :
-
 - lire et parser une requête JSON;
 - valider les données entrantes;
 - appeler la logique métier et l'ORM Django;
@@ -16,7 +15,6 @@ Django REST Framework (DRF) ajoute à Django les outils nécessaires pour constr
 DRF ne dessine pas l'interface React. Le serializer prépare les données JSON; React décide comment les afficher.
 
 ### Cycle général d'une requête
-
 ```mermaid
 sequenceDiagram
     participant C as Client React ou curl
@@ -280,7 +278,9 @@ LigneCommande.objects.filter(
 
 Dans ce projet, `Utilisateurs` ne possède pas de champ `cree_par`; ne pas écrire `Utilisateurs.objects.filter(cree_par=...)`. Les modèles `Commande`, `Produit`, `Fournisseur`, `Facture` et `Paiement` ont, eux, un champ `cree_par`. Les lignes de commande passent par leur commande liée.
 
-Attention : `Utilisateurs.objects.all()` expose tous les comptes à tout utilisateur qui passe les permissions. Limiter le queryset ne remplace pas une politique de permissions correcte.
+Dans ce projet, les listes métier sont limitées à `cree_par=request.user` et les références étrangères (fournisseur, produit, commande, facture) sont également validées dans le même espace utilisateur. Les champs `cree_par` sont en lecture seule et définis par le ViewSet lors de la création. Les lignes de commande héritent du propriétaire de leur commande.
+
+Le ViewSet `Utilisateurs` limite un compte non administrateur à son propre profil ; seuls les administrateurs peuvent gérer les autres comptes. L’inscription reste publique via l’action dédiée `register`, pas via la création authentifiée du ViewSet.
 
 ### Actions supplémentaires avec `@action`
 
@@ -414,7 +414,7 @@ Exemple d'obtention d'un jeton (identifiant `email` pour le modèle de ce projet
 
 ```powershell
 $body = @{ email = 'lea@example.com'; password = 'mot-de-passe' } | ConvertTo-Json
-curl.exe -X POST 'http://127.0.0.1:8001/api/token/' `
+curl.exe -X POST 'http://127.0.0.1:8000/api/token/' `
   -H 'Content-Type: application/json' `
   --data-binary $body
 ```
@@ -431,7 +431,7 @@ Réponse standard :
 Appel protégé :
 
 ```powershell
-curl.exe 'http://127.0.0.1:8001/api/utilisateurs/' `
+curl.exe 'http://127.0.0.1:8000/api/utilisateurs/' `
   -H 'Authorization: Bearer <access_token>'
 ```
 
@@ -439,7 +439,7 @@ Renouvellement :
 
 ```powershell
 $body = @{ refresh = '<refresh_token>' } | ConvertTo-Json
-curl.exe -X POST 'http://127.0.0.1:8001/api/token/refresh/' `
+curl.exe -X POST 'http://127.0.0.1:8000/api/token/refresh/' `
   -H 'Content-Type: application/json' `
   --data-binary $body
 ```
@@ -517,7 +517,7 @@ CORS_ALLOWED_ORIGINS = [
 Exemple React avec fetch :
 
 ```javascript
-const response = await fetch('http://127.0.0.1:8001/api/utilisateurs/', {
+const response = await fetch('http://127.0.0.1:8000/api/utilisateurs/', {
   headers: {
     Authorization: `Bearer ${accessToken}`,
   },
@@ -533,7 +533,7 @@ const utilisateurs = await response.json()
 Si le client envoie un JSON en `POST` :
 
 ```javascript
-const response = await fetch('http://127.0.0.1:8001/api/token/', {
+const response = await fetch('http://127.0.0.1:8000/api/token/', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ email, password }),
@@ -603,8 +603,10 @@ Démarrer le serveur avec l'environnement virtuel du projet :
 
 ```powershell
 cd backend\config
-..\.env\Scripts\python.exe manage.py runserver 127.0.0.1:8001
+..\.env\Scripts\python.exe manage.py runserver 127.0.0.1:8000
 ```
+
+Le proxy Vite en développement transmet `/api` vers ce port. Si le frontend et l'API sont déployés séparément, définir `VITE_API_URL` sur l'URL de l'API suivie de `/api` (par exemple `https://api.example.com/api`) et `DJANGO_ALLOWED_HOSTS` sur le ou les noms d'hôte de l'API.
 
 Vérifier la configuration :
 

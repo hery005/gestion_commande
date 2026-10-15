@@ -15,13 +15,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
-from rest_framework.routers import DefaultRouter
-from utilisateurs.views import UtilisateurViewSet
+from django.urls import include, path, re_path
+from django.views.generic import TemplateView
 
-
+from config.views import health_check
 
 urlpatterns = [
+    path('health/', health_check, name='health-check'),
     path('admin/', admin.site.urls),
     path('api/', include('config.api_urls')),
+    re_path(
+        r'^(?!api/|admin/|health/|static/).*$',
+        TemplateView.as_view(template_name='index.html'),
+        name='frontend',
+    ),
 ]

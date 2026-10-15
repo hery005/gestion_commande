@@ -1,0 +1,16 @@
+.git
+.github
+.vscode
+.idea
+**/node_modules
+**/dist
+**/dist-ssr
+**/__pycache__
+**/*.py[cod]
+**/.env
+**/.env.*
+**/.venv
+**/venv
+backend/.env
+frontend/.env*
+*.log

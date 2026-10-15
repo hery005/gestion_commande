@@ -1,4 +1,4 @@
-from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+﻿from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
@@ -6,9 +6,9 @@ from django.db import models
 class UtilisateurManager(BaseUserManager):
     use_in_migrations = True
 
-    def create_user(self, email, nomUtilisateur, prenomUtilisateur, password=None, **extra_fields):
+    def create_user(self, email, nomUtilisateur, prenomUtilisateur, password=None, mot_de_passe=None, **extra_fields):
         if not email:
-            raise ValueError('L\'email est obligatoire.')
+            raise ValueError("L'email est obligatoire.")
         if not nomUtilisateur:
             raise ValueError('Le nom est obligatoire.')
         if not prenomUtilisateur:
@@ -21,11 +21,11 @@ class UtilisateurManager(BaseUserManager):
             prenomUtilisateur=prenomUtilisateur,
             **extra_fields,
         )
-        user.set_password(password)
+        user.set_password(password if password is not None else mot_de_passe)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, nomUtilisateur, prenomUtilisateur, password=None, **extra_fields):
+    def create_superuser(self, email, nomUtilisateur, prenomUtilisateur, password=None, mot_de_passe=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
@@ -35,7 +35,14 @@ class UtilisateurManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Le superutilisateur doit avoir is_superuser=True.')
 
-        return self.create_user(email, nomUtilisateur, prenomUtilisateur, password, **extra_fields)
+        return self.create_user(
+            email,
+            nomUtilisateur,
+            prenomUtilisateur,
+            password=password,
+            mot_de_passe=mot_de_passe,
+            **extra_fields,
+        )
 
 
 class Utilisateurs(AbstractBaseUser, PermissionsMixin):

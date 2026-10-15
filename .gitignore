@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+.env.*
+.venv/
+venv/
+node_modules/
+dist/
+dist-ssr/
+*.sqlite3
+*.log
+temp_api_setup.py
+temp_frontend_setup.py
