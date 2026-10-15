@@ -1,6 +1,6 @@
 # Gestion de commande
 
-Application web de gestion des fournisseurs, produits, stocks, commandes, factures et paiements. L'interface React et l'API Django sont conçues pour être déployées ensemble.
+Application web permettant aux utilisateurs de gérer leurs commandes, fournisseurs, produits, stocks, factures et paiements. L'interface React et l'API Django sont conçues pour être déployées ensemble.
 
 ## Technologies
 
