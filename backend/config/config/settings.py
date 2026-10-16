@@ -109,6 +109,11 @@ if DATABASE_URL:
         'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600),
     }
 else:
+    if os.environ.get('RAILWAY_ENVIRONMENT_NAME'):
+        raise ImproperlyConfigured(
+            "DATABASE_URL is not set. Add a database service (e.g. Postgres) and "
+            "reference its DATABASE_URL in this service's variables."
+        )
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
