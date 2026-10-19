@@ -10,6 +10,10 @@ Le dépôt est préparé pour un seul service web Railway : le conteneur constru
    - `DATABASE_URL=${{Postgres.DATABASE_URL}}` (adapter `Postgres` au nom réel du service de base).
    - `DJANGO_SECRET_KEY` : une nouvelle clé aléatoire, générée localement avec `python -c "import secrets; print(secrets.token_urlsafe(50))"`.
    - `DJANGO_DEBUG=false`.
+   - `BREVO_API_KEY` : la clé API v3 Brevo.
+   - `DJANGO_DEFAULT_FROM_EMAIL` : l'adresse d'expédition vérifiée dans Brevo, par exemple `no-reply@votre-domaine.com`.
+
+   L'envoi transactionnel utilise `django-anymail` via l'API HTTPS de Brevo ; aucun identifiant SMTP n'est requis. Si `DJANGO_EMAIL_BACKEND` est défini, vérifiez qu'il ne sélectionne pas l'ancien backend SMTP. Garder la clé API confidentielle dans Railway et ne pas la préfixer par `VITE_`.
 4. Dans les paramètres de déploiement du service web, définir la commande **Pre-deploy** à `python backend/config/manage.py migrate --noinput`. Elle applique les migrations à PostgreSQL avant le démarrage du nouveau conteneur.
 5. Configurer le contrôle de santé sur `/health/`, générer un domaine public Railway, puis déployer.
 
