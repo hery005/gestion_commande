@@ -15,6 +15,7 @@ Le dépôt est préparé pour un seul service web Railway : le conteneur constru
    - `DJANGO_PUBLIC_URL` (recommandé) : l'origine publique de l'application, par exemple `https://mon-app.up.railway.app`. Cette adresse sert à composer les liens sécurisés envoyés aux fournisseurs. Si elle est absente, Django utilise `RAILWAY_PUBLIC_DOMAIN`.
 
    L'envoi transactionnel utilise `django-anymail` via l'API HTTPS de Brevo ; aucun identifiant SMTP n'est requis. Si `DJANGO_EMAIL_BACKEND` est défini, vérifiez qu'il ne sélectionne pas l'ancien backend SMTP. Garder la clé API confidentielle dans Railway et ne pas la préfixer par `VITE_`.
+   - Vérifier que l'adresse ou le domaine d'expédition est validé dans Brevo avant l'envoi transactionnel.
 4. Dans les paramètres de déploiement du service web, définir la commande **Pre-deploy** à `python backend/config/manage.py migrate --noinput`. Elle applique les migrations à PostgreSQL avant le démarrage du nouveau conteneur.
 5. Configurer le contrôle de santé sur `/health/`, générer un domaine public Railway, puis déployer.
 
@@ -25,6 +26,8 @@ Le dépôt est préparé pour un seul service web Railway : le conteneur constru
 - Ouvrir `https://<domaine-public>/health/` : la réponse attendue est `{"status": "ok"}`. Ce contrôle vérifie également la connexion à PostgreSQL.
 - Ouvrir `https://<domaine-public>/login`, puis vérifier l'inscription et la connexion. L'API est servie sur la même origine sous `/api/`.
 - Créer une commande et vérifier la réception du message par le fournisseur. Le fournisseur dispose de 7 jours pour répondre via son lien sécurisé. Après confirmation, l'utilisateur peut enregistrer le mode de paiement; la facture PDF est alors créée et envoyée au fournisseur.
+- Ouvrir `https://<domaine-public>/register`, demander un code de vérification et vérifier sa réception avant de terminer l'inscription. En cas d'échec, contrôler les journaux du service Railway, la variable `BREVO_API_KEY` et l'adresse expéditeur vérifiée côté Brevo.
+- Ouvrir `https://<domaine-public>/login` et vérifier la connexion. L'API est servie sur la même origine sous `/api/`.
 - Contrôler les journaux Railway si la compilation Docker, les migrations ou le démarrage échouent. Les erreurs de migration arrêtent le déploiement au lieu de servir une application avec une base incomplète.
 
 ## Notes

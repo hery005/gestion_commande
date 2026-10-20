@@ -111,6 +111,21 @@
   margin-top: 4px;
 }
 
+.register-back-button {
+  align-self: center;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.82);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.register-back-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .register-form .login-field label span {
   color: rgba(255, 255, 255, 0.65);
   font-weight: 400;
@@ -189,12 +204,43 @@
 }
 
 .password-requirements {
-  display: block;
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 2px 0 0;
+  list-style: none;
+}
+
+.password-requirements-note {
   margin: 0;
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.68rem;
   line-height: 1.5;
-  text-transform: none;
+}
+
+.password-requirements li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.68rem;
+  line-height: 1.4;
+  transition: color 160ms ease;
+}
+
+.password-requirements li.is-valid {
+  color: #8fe0ad;
+}
+
+.password-requirements li.is-invalid {
+  color: #ffaaa5;
+}
+
+.password-requirements li span {
+  width: 12px;
+  flex: 0 0 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
 }
 
 .login-field input::placeholder {

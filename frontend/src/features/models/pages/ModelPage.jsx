@@ -57,7 +57,7 @@ const entityMeta = {
   },
   facture: {
     title: 'Factures',
-    subtitle: 'Documents et échéances',
+    subtitle: 'Factures générées avec les commandes et suivi des échéances',
     tabs: [{ label: "Vue d'ensemble", to: '/dashboard/factures' }, { label: 'Commandes', to: '/dashboard/commandes' }, { label: 'Paiements', to: '/dashboard/paiements' }],
     primaryAction: null,
     fetcher: getFactures,
@@ -242,7 +242,7 @@ export default function ModelPage({ entity = 'commande' }) {
           const produitData = await getProduits();
           setProducts(produitData || []);
         }
-        if (entity === 'paiement' || entity === 'commande') {
+        if (entity === 'paiement' || entity === 'commande' || entity === 'facture') {
           const factureData = await getFactures();
           setInvoices(factureData || []);
         }
@@ -429,12 +429,12 @@ export default function ModelPage({ entity = 'commande' }) {
         const savedOrder = await persistEntity('commande', {
           fk_id_fournisseur: Number(form.fk_id_fournisseur),
           ...(!editingRecord ? {
-          panier: panier.map((item) => ({
-            ...(item.id_produit
-              ? { id_produit: Number(item.id_produit) }
-              : { nom_produit: item.nomProduit, prix: Number(item.prix) }),
-            quantite: Number(item.quantite),
-          })),
+            panier: panier.map((item) => ({
+              ...(item.id_produit
+                ? { id_produit: Number(item.id_produit) }
+                : { nom_produit: item.nomProduit, prix: Number(item.prix) }),
+              quantite: Number(item.quantite),
+            })),
           } : {}),
         }, editingRecord, createCommande);
         if (savedOrder.email_error) setActionError(savedOrder.email_error);
@@ -562,7 +562,7 @@ export default function ModelPage({ entity = 'commande' }) {
       }
       setMessage('');
       setPanier((current) => [...current, {
-        ligneLocale: `${Date.now()}-${Math.random()}`,
+        ligneLocale: `${Date.now()}-${current.length}`,
         nomProduit: name,
         quantite: Number(selectedQuantity),
         prix: price,
@@ -628,6 +628,7 @@ export default function ModelPage({ entity = 'commande' }) {
             annulee: 'Refusée',
             livree: 'Livrée',
           }[item.status] || item.status || 'En attente'),
+        articles: (item.lignes || []).map((line) => line.nom_produit).join(', '),
       };
     });
     if (entity === 'utilisateur') return rows.map((item) => ({
@@ -742,7 +743,7 @@ export default function ModelPage({ entity = 'commande' }) {
     if (entity === 'commande') {
       return displayedRows.map((row, index) => (
         <tr key={`${row.ref}-${index}`}>
-          <td>{row.ref}</td>
+          <td>{row.ref}<small>{row.articles || 'Aucun article'}</small></td>
           <td>{row.supplier}</td>
           <td>{row.date}</td>
           <td>{row.total}</td>
@@ -914,6 +915,7 @@ export default function ModelPage({ entity = 'commande' }) {
                 <>
                   <label><span>Fournisseur</span><select required value={form.fk_id_fournisseur || ''} onChange={(e) => setForm({ ...form, fk_id_fournisseur: e.target.value })}><option value="">Sélectionner</option>{suppliers.map((item) => <option key={item.id_fournisseur} value={item.id_fournisseur}>{item.nomFournisseur} {item.prenomFournisseur}</option>)}</select></label>
                   {!editingRecord && <p className="entity-form-hint">Référence automatique : CMD-date-numéro unique. Elle est attribuée à l’enregistrement et ne peut pas être dupliquée.</p>}
+                  {!editingRecord && <p className="entity-form-hint">La facture sera générée automatiquement à partir des articles et de leurs prix.</p>}
 
                   {!editingRecord && (
                     <div className="entity-panier-box">
@@ -1049,7 +1051,7 @@ export default function ModelPage({ entity = 'commande' }) {
 
               {modalType === 'facture' && (
                 <>
-                  <div className="entity-grid"><label><span>Commande</span><select required value={form.fk_id_commande || ''} onChange={(e) => setForm({ ...form, fk_id_commande: e.target.value })}><option value="">Sélectionner</option>{orders.map((item) => <option key={item.id_commande} value={item.id_commande}>{item.reference}</option>)}</select></label><label><span>Montant total (Ar)</span><input required type="number" min="0.01" step="0.01" value={form.montant_total ?? ''} onChange={(e) => setForm({ ...form, montant_total: e.target.value })} /></label></div>
+                  <div className="entity-grid"><label><span>Commande</span><select required value={form.fk_id_commande || ''} onChange={(e) => setForm({ ...form, fk_id_commande: e.target.value })}><option value="">Sélectionner</option>{orders.filter((order) => !invoices.some((invoice) => String(invoice.fk_id_commande) === String(order.id_commande) && invoice.id_facture !== editingRecord?.id_facture)).map((item) => <option key={item.id_commande} value={item.id_commande}>{item.reference}</option>)}</select></label><label><span>Montant total (Ar)</span><input required type="number" min="0.01" step="0.01" value={form.montant_total ?? ''} onChange={(e) => setForm({ ...form, montant_total: e.target.value })} /></label></div>
                   <div className="entity-grid"><label><span>Date d’échéance</span><input type="date" value={form.date_echeance || ''} onChange={(e) => setForm({ ...form, date_echeance: e.target.value })} /></label><div><span>Référence facture</span><p className="entity-form-hint">{editingRecord?.reference_facture || 'Générée automatiquement à l’enregistrement'}</p></div></div>
                 </>
               )}

@@ -439,6 +439,14 @@
   font-size: 0.62rem;
 }
 
+.entity-table td small {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.58rem;
+  line-height: 1.45;
+}
+
 .entity-panier-list {
   display: grid;
   gap: 7px;

@@ -146,15 +146,19 @@ class UserDataIsolationTests(APITestCase):
         self.assertEqual(command_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(command_response.data['cree_par'], self.user_a.pk)
 
+        self.assertFalse(Facture.objects.filter(
+            fk_id_commande_id=command_response.data['id_commande'],
+        ).exists())
         invoice_response = self.client.post('/api/factures/', {
             'fk_id_commande': command_response.data['id_commande'],
             'montant_total': '12.50',
         })
         self.assertEqual(invoice_response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(invoice_response.data['cree_par'], self.user_a.pk)
+        invoice = Facture.objects.get(pk=invoice_response.data['id_facture'])
+        self.assertEqual(invoice.cree_par, self.user_a)
 
         payment_response = self.client.post('/api/paiements/', {
-            'fk_id_facture': invoice_response.data['id_facture'],
+            'fk_id_facture': invoice.pk,
             'montant': '12.50',
             'mode_paiement': 'Virement',
         })
@@ -210,6 +214,9 @@ class UserDataIsolationTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
         self.assertEqual(response.data['total'], Decimal('137.50'))
+        self.assertFalse(Facture.objects.filter(
+            fk_id_commande_id=response.data['id_commande'],
+        ).exists())
         self.assertEqual(
             [(line['nom_produit'], line['id_produit']) for line in response.data['lignes']],
             [('Produit A', self.product_a.pk), ('Prestation ponctuelle', None)],
@@ -238,6 +245,16 @@ class UserDataIsolationTests(APITestCase):
 
                 self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
                 self.assertIn('panier', response.data)
+
+    def test_cannot_create_a_second_invoice_for_an_order(self):
+        self.client.force_authenticate(self.user_a)
+        response = self.client.post('/api/factures/', {
+            'fk_id_commande': self.command_a.pk,
+            'montant_total': '100.00',
+        })
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('Une facture existe déjà', str(response.data))
 
     def test_data_forms_reject_invalid_values(self):
         self.client.force_authenticate(self.user_a)

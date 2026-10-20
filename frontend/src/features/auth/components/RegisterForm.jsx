@@ -9,6 +9,10 @@ export default function RegisterForm({ onSubmit, error, loading }) {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [passwordError, setPasswordError] = useState(null);
+    const passwordRequirements = [
+        { label: "Au moins 8 caractères", valid: password.length >= 8 },
+        { label: "Ne pas être composé uniquement de chiffres", valid: password.length > 0 && !/^\d+$/.test(password) },
+    ];
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -98,10 +102,22 @@ export default function RegisterForm({ onSubmit, error, loading }) {
                     onChange={(event) => setPassword(event.target.value)}
                     required
                 />
-                <p className="password-requirements">
-                    8 caractères minimum. Évitez les mots de passe courants, uniquement numériques
-                    ou trop proches de votre nom, prénom ou adresse e-mail.
+                <p className="password-requirements-note">
+                    Le mot de passe ne doit pas être courant ni trop proche de vos informations
+                    personnelles.
                 </p>
+                <ul className="password-requirements" aria-label="Conditions du mot de passe">
+                    {passwordRequirements.map(({ label, valid }) => (
+                        <li
+                            className={valid ? "is-valid" : "is-invalid"}
+                            aria-label={`${label} : ${valid ? "validé" : "non validé"}`}
+                            key={label}
+                        >
+                            <span aria-hidden="true">{valid ? "✓" : "×"}</span>
+                            {label}
+                        </li>
+                    ))}
+                </ul>
             </div>
             <div className="login-field">
                 <label htmlFor="register-confirm-password">Confirmer le mot de passe</label>
