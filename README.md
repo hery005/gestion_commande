@@ -17,6 +17,8 @@ Configurer et démarrer Django depuis `backend/config` avec l'environnement Pyth
 
 En production, les e-mails transactionnels utilisent `django-anymail` avec l'API HTTPS Brevo. Configurer `BREVO_API_KEY` et `DJANGO_DEFAULT_FROM_EMAIL` (adresse vérifiée dans Brevo) dans l'environnement du backend. En développement, Django utilise par défaut le backend console.
 
+La création d'une commande envoie la demande au fournisseur avec un lien de réponse unique valable sept jours. Une confirmation déclenche une notification de paiement; l'enregistrement du mode de paiement crée le paiement, la facture PDF et met à jour le stock. La facture apparaît dans le tableau correspondant et est également jointe à l'e-mail envoyé au fournisseur. Pour les articles hors catalogue, la confirmation les ajoute au catalogue avec un stock initial à zéro.
+
 ## Déploiement
 
 Le Dockerfile à la racine construit le frontend et le sert avec Django. Pour créer le service PostgreSQL, configurer les variables Railway et lancer le premier déploiement, suivre le [guide Railway](./RAILWAY.md).

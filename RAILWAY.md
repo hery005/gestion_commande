@@ -12,6 +12,7 @@ Le dépôt est préparé pour un seul service web Railway : le conteneur constru
    - `DJANGO_DEBUG=false`.
    - `BREVO_API_KEY` : la clé API v3 Brevo.
    - `DJANGO_DEFAULT_FROM_EMAIL` : l'adresse d'expédition vérifiée dans Brevo, par exemple `no-reply@votre-domaine.com`.
+   - `DJANGO_PUBLIC_URL` (recommandé) : l'origine publique de l'application, par exemple `https://mon-app.up.railway.app`. Cette adresse sert à composer les liens sécurisés envoyés aux fournisseurs. Si elle est absente, Django utilise `RAILWAY_PUBLIC_DOMAIN`.
 
    L'envoi transactionnel utilise `django-anymail` via l'API HTTPS de Brevo ; aucun identifiant SMTP n'est requis. Si `DJANGO_EMAIL_BACKEND` est défini, vérifiez qu'il ne sélectionne pas l'ancien backend SMTP. Garder la clé API confidentielle dans Railway et ne pas la préfixer par `VITE_`.
 4. Dans les paramètres de déploiement du service web, définir la commande **Pre-deploy** à `python backend/config/manage.py migrate --noinput`. Elle applique les migrations à PostgreSQL avant le démarrage du nouveau conteneur.
@@ -23,6 +24,7 @@ Le dépôt est préparé pour un seul service web Railway : le conteneur constru
 
 - Ouvrir `https://<domaine-public>/health/` : la réponse attendue est `{"status": "ok"}`. Ce contrôle vérifie également la connexion à PostgreSQL.
 - Ouvrir `https://<domaine-public>/login`, puis vérifier l'inscription et la connexion. L'API est servie sur la même origine sous `/api/`.
+- Créer une commande et vérifier la réception du message par le fournisseur. Le fournisseur dispose de 7 jours pour répondre via son lien sécurisé. Après confirmation, l'utilisateur peut enregistrer le mode de paiement; la facture PDF est alors créée et envoyée au fournisseur.
 - Contrôler les journaux Railway si la compilation Docker, les migrations ou le démarrage échouent. Les erreurs de migration arrêtent le déploiement au lieu de servir une application avec une base incomplète.
 
 ## Notes

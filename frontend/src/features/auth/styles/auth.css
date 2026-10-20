@@ -180,6 +180,23 @@
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
+.login-field .password-input-field {
+  padding-right: 4.5rem;
+}
+
+.login-field .password-input-toggle {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.password-requirements {
+  display: block;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  text-transform: none;
+}
+
 .login-field input::placeholder {
   color: rgba(255, 255, 255, 0.62);
   opacity: 1;

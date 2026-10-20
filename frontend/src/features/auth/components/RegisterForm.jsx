@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PasswordInput from "../../../components/PasswordInput";
 
 export default function RegisterForm({ onSubmit, error, loading }) {
     const [nomUtilisateur, setNomUtilisateur] = useState("");
@@ -87,10 +88,9 @@ export default function RegisterForm({ onSubmit, error, loading }) {
             </div>
             <div className="login-field">
                 <label htmlFor="register-password">Mot de passe</label>
-                <input
+                <PasswordInput
                     id="register-password"
                     name="password"
-                    type="password"
                     autoComplete="new-password"
                     placeholder="8 caractères minimum"
                     minLength={8}
@@ -98,13 +98,16 @@ export default function RegisterForm({ onSubmit, error, loading }) {
                     onChange={(event) => setPassword(event.target.value)}
                     required
                 />
+                <p className="password-requirements">
+                    8 caractères minimum. Évitez les mots de passe courants, uniquement numériques
+                    ou trop proches de votre nom, prénom ou adresse e-mail.
+                </p>
             </div>
             <div className="login-field">
                 <label htmlFor="register-confirm-password">Confirmer le mot de passe</label>
-                <input
+                <PasswordInput
                     id="register-confirm-password"
                     name="confirmPassword"
-                    type="password"
                     autoComplete="new-password"
                     placeholder="Saisissez à nouveau le mot de passe"
                     minLength={8}

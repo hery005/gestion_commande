@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PasswordInput from "../../../components/PasswordInput";
 
 export default function LoginForm({onSubmit, error, loading}) {
     const [email, setEmail] = useState('');
@@ -26,9 +27,8 @@ export default function LoginForm({onSubmit, error, loading}) {
             </div>
             <div className="login-field">
                 <label htmlFor="login-password">Mot de passe</label>
-                <input
+                <PasswordInput
                     id="login-password"
-                    type="password"
                     name="password"
                     autoComplete="current-password"
                     placeholder="Saisissez votre mot de passe"
