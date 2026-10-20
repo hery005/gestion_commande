@@ -942,27 +942,54 @@ export default function ModelPage({ entity = 'commande' }) {
                           </select>
                         ) : (
                           <>
-                            <input
-                              aria-label="Nom de l’article hors catalogue"
-                              maxLength={255}
-                              placeholder="Nom de l’article"
-                              required={panier.length === 0}
-                              value={customItemName}
-                              onChange={(event) => setCustomItemName(event.target.value)}
-                            />
-                            <input
-                              aria-label="Prix unitaire de l’article hors catalogue"
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              placeholder="Prix unitaire"
-                              required={panier.length === 0}
-                              value={customItemPrice}
-                              onChange={(event) => setCustomItemPrice(event.target.value)}
-                            />
+                            <label className="entity-panier-field">
+                              <span>Nom de l’article</span>
+                              <input
+                                maxLength={255}
+                                placeholder="Saisir le nom"
+                                required={panier.length === 0}
+                                value={customItemName}
+                                onChange={(event) => setCustomItemName(event.target.value)}
+                              />
+                            </label>
+                            <label className="entity-panier-field">
+                              <span>Prix unitaire (Ar)</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="Saisir le prix"
+                                required={panier.length === 0}
+                                value={customItemPrice}
+                                onChange={(event) => setCustomItemPrice(event.target.value)}
+                              />
+                            </label>
                           </>
                         )}
-                        <input aria-label="Quantité du produit" type="number" min="0.01" step="0.01" required value={selectedQuantity} onChange={(e) => setSelectedQuantity(e.target.value)} />
+                        {panierItemType === 'hors_catalogue' ? (
+                          <label className="entity-panier-field">
+                            <span>Quantité</span>
+                            <input
+                              aria-label="Quantité de l’article hors catalogue"
+                              type="number"
+                              min="0.01"
+                              step="0.01"
+                              required
+                              value={selectedQuantity}
+                              onChange={(e) => setSelectedQuantity(e.target.value)}
+                            />
+                          </label>
+                        ) : (
+                          <input
+                            aria-label="Quantité du produit"
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            required
+                            value={selectedQuantity}
+                            onChange={(e) => setSelectedQuantity(e.target.value)}
+                          />
+                        )}
                         <button type="button" className="entity-inline-btn" onClick={addToPanier}>Ajouter</button>
                       </div>
                       {panierItemType === 'hors_catalogue' && <p className="entity-form-hint">Après confirmation du fournisseur, cet article sera ajouté au catalogue avec un stock initial de 0.</p>}
