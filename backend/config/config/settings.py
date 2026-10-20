@@ -44,6 +44,10 @@ ALLOWED_HOSTS = [
 RAILWAY_PUBLIC_DOMAIN = os.environ.get('RAILWAY_PUBLIC_DOMAIN', '').strip()
 if RAILWAY_PUBLIC_DOMAIN and RAILWAY_PUBLIC_DOMAIN not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
+PUBLIC_APP_URL = (
+    os.environ.get('DJANGO_PUBLIC_URL', '').strip()
+    or (f'https://{RAILWAY_PUBLIC_DOMAIN}' if RAILWAY_PUBLIC_DOMAIN else 'http://localhost:8000')
+).rstrip('/')
 
 AUTH_USER_MODEL = 'utilisateurs.Utilisateurs'
 
