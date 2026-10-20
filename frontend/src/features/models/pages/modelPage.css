@@ -432,6 +432,23 @@
   grid-template-columns: minmax(0, 1.4fr) minmax(100px, 0.8fr) 90px auto;
 }
 
+.entity-panier-field {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  align-content: start;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.58rem;
+}
+
+.entity-panier-field input {
+  min-width: 0;
+}
+
+.entity-panier-controls.is-custom .entity-inline-btn {
+  align-self: end;
+}
+
 .entity-panier-type {
   display: grid;
   gap: 6px;

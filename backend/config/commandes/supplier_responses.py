@@ -56,7 +56,6 @@ def supplier_order_response(request, token):
         order = (
             Commande.objects
             .select_for_update()
-            .select_related('fk_id_fournisseur', 'cree_par')
             .filter(
                 supplier_response_token_hash=hashlib.sha256(token.encode()).hexdigest(),
                 supplier_response_expires_at__gt=timezone.now(),
